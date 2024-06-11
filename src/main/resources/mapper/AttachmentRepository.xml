@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.lec.spring.repository.AttachmentRepository">
+
+    <insert id="insert" flushCache="true" parameterType="arraylist">    /* arraylist: 매개변수에서 배열이나 list인 거 하나를 뽑아냄*/
+        INSERT INTO t5_attachment(sourcename, filename, post_id)
+        VALUES
+            <foreach collection="list" item="e" separator=",">    /* list 는 AttachmentRepository 에서 추가에서 사용한 list, e 는 map, separator 는 반복하며 중간에 , 추가*/
+                (#{e.sourcename}, #{e.filename}, #{param2}) /* 각각 sourcename, filename, id*/
+            </foreach>
+    </insert>
+
+    <insert id="save" flushCache="true" parameterType="com.lec.spring.domain.Attachment">
+        INSERT INTO t5_attachment(sourcename, filename, post_id)
+        VALUES (#{sourcename}, #{filename}, #{post_id})
+    </insert>
+
+    <sql id="SELECTFILE">
+        SELECT id, sourcename, filename, post_id
+        FROM t5_attachment
+        WHERE 1=1
+    </sql>
+
+    <select id="findByPost" resultType="com.lec.spring.domain.Attachment">
+        <include refid="SELECTFILE"/>
+        AND
+            post_id = #{param1}
+        ORDER BY id ASC
+    </select>
+
+    <select id="findById" resultType="com.lec.spring.domain.Attachment">
+        <include refid="SELECTFILE"/>
+        AND id = #{id}  /* id 는 첨부파일 id */
+    </select>
+
+    <select id="findByIds" resultType="com.lec.spring.domain.Attachment"
+        parameterType="arraylist">    /* 배열이지만 arraylist 가능*/
+        <include refid="SELECTFILE"/>
+        AND id IN
+            <foreach collection="array" item="e" separator=","
+                open="(" close=")">    /* item 은 Long 타입, 시작은 (, 끝은 )*/
+                #{e}
+            </foreach>
+            ORDER By id ASC
+    </select>
+
+    <delete id="deleteByIds" flushCache="true"
+        parameterType="java.util.ArrayList">    /* arraylist 가 아니라 이렇게 작성도 가능*/
+        DELETE FROM t5_attachment
+        WHERE id IN (<foreach collection="array" item="item" separator=",">
+                        #{item}
+                    </foreach>)   /* open, close 대신 괄호 안에서 foreach 태그 사용*/
+    </delete>
+
+    <delete id="delete" flushCache="true">
+        DELETE FROM t5_attachment WHERE id = #{id}
+    </delete>
+</mapper>
