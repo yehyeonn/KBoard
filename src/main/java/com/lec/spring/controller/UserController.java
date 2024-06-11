@@ -53,7 +53,7 @@ public class UserController {
         }
 
         // 에러가 없으면 회원 등록 진행
-        String page = "/user/registerOk";
+        String page = "user/registerOk";
         int count = userService.register(user);    // 신규회원 정보 받아서 넣기
         model.addAttribute("result", count);
         return page;

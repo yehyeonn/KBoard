@@ -74,3 +74,6 @@ FROM t5_comment c, t5_user u
 WHERE c.user_id = u.id AND c.post_id =1
 ORDER BY c.id DESC;             -- 1번 글(c.post_id =1)의 정보
 
+DELETE
+FROM t5_user
+WHERE id = 6;
